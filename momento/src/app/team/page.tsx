@@ -1,0 +1,92 @@
+import { MetricCard } from "@/components/metric-card";
+import { StatusBadge } from "@/components/status-badge";
+import { getMomentoData } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
+
+export default async function TeamPage() {
+  const { metrics, users, tasks } = await getMomentoData();
+
+  return (
+    <div className="page-stack">
+      <section className="section-header">
+        <div className="section-title">
+          <p className="eyebrow">Team</p>
+          <h2>Ownership, workload, and momentum</h2>
+        </div>
+      </section>
+
+      <section className="kpi-grid">
+        <MetricCard label="Tracked teammates" value={String(users.length)} hint="Internal NeoTechie members" />
+        <MetricCard label="Assignments" value={String(tasks.filter((task) => task.assigneeId).length)} hint="Owned work items" />
+        <MetricCard label="Done tasks" value={String(metrics.completedTasks)} hint="Closed this cycle" tone="good" />
+        <MetricCard label="Overdue tasks" value={String(metrics.overdueTasks)} hint="Needs intervention" tone="critical" />
+      </section>
+
+      <section className="two-column">
+        <article className="list-card">
+          <div className="section-header">
+            <div className="section-title">
+              <p className="eyebrow">Team Load</p>
+              <h3>Who owns what right now</h3>
+            </div>
+          </div>
+          {metrics.teamLoad.map((entry) => (
+            <div key={entry.user.id} className="team-row">
+              <div className="section-header" style={{ marginBottom: 0 }}>
+                <div>
+                  <strong>{entry.user.name}</strong>
+                  <div className="meta-row">
+                    <span>{entry.user.role}</span>
+                    <span>{entry.user.team}</span>
+                  </div>
+                </div>
+                <StatusBadge
+                  label={`${entry.completionRate}% completion`}
+                  tone={entry.completionRate >= 70 ? "good" : entry.completionRate >= 40 ? "warn" : "critical"}
+                />
+              </div>
+              <div className="surface-grid">
+                <div className="surface">
+                  <p className="muted">Assigned</p>
+                  <strong>{entry.assigned}</strong>
+                </div>
+                <div className="surface">
+                  <p className="muted">Done</p>
+                  <strong>{entry.done}</strong>
+                </div>
+                <div className="surface">
+                  <p className="muted">Overdue</p>
+                  <strong>{entry.overdue}</strong>
+                </div>
+              </div>
+            </div>
+          ))}
+        </article>
+
+        <article className="panel panel--dark">
+          <div className="section-header">
+            <div className="section-title">
+              <p className="eyebrow">Interpretation</p>
+              <h3>How to read the productivity score</h3>
+            </div>
+          </div>
+          <div className="stack-list">
+            <div className="surface">
+              <strong>Completion rate</strong>
+              <p className="muted">Higher completion relative to open work raises the score.</p>
+            </div>
+            <div className="surface">
+              <strong>Overdue pressure</strong>
+              <p className="muted">Late tasks reduce the score and signal execution drag.</p>
+            </div>
+            <div className="surface">
+              <strong>Workload balance</strong>
+              <p className="muted">Large ownership imbalances reduce the score to flag bottlenecks.</p>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  );
+}
