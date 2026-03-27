@@ -1,4 +1,4 @@
-import { addTaskNoteAction, createTaskAction, updateTaskStatusAction } from "@/app/actions";
+import { addTaskNoteAction, createSubtaskAction, createTaskAction, updateTaskStatusAction } from "@/app/actions";
 import { StatusBadge } from "@/components/status-badge";
 import { getMomentoData } from "@/lib/data";
 
@@ -33,7 +33,7 @@ export default async function TasksPage() {
           <div className="section-header">
             <div className="section-title">
               <p className="eyebrow">Create</p>
-              <h3>Add a task</h3>
+              <h3>Add a task with subtasks</h3>
             </div>
           </div>
           <form action={createTaskAction}>
@@ -95,6 +95,25 @@ export default async function TasksPage() {
                 <input id="estimatedHours" name="estimatedHours" type="number" min="0" defaultValue="4" />
               </div>
             </div>
+            <div className="field">
+              <label htmlFor="subtasks">Subtasks</label>
+              <textarea
+                id="subtasks"
+                name="subtasks"
+                placeholder={"One subtask per line\nResearch source websites\nDraft title options\nReview with team"}
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="subtaskAssigneeId">Default subtask assignee</label>
+              <select id="subtaskAssigneeId" name="subtaskAssigneeId" defaultValue="">
+                <option value="">Same as task / unassigned</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button className="button" type="submit">
               Add task
             </button>
@@ -104,28 +123,33 @@ export default async function TasksPage() {
         <article className="panel panel--dark">
           <div className="section-header">
             <div className="section-title">
-              <p className="eyebrow">Phone-Ready</p>
-              <h3>Fast mobile actions</h3>
+              <p className="eyebrow">Execution Flow</p>
+              <h3>Task first, checklist underneath</h3>
             </div>
           </div>
           <div className="surface-grid">
             <div className="surface">
-              <p className="muted">Ideal mobile flow</p>
-              <strong>Open, update, assign, note</strong>
+              <p className="muted">Why this is better</p>
+              <strong>Every task can carry its own live checklist</strong>
             </div>
             <div className="surface">
-              <p className="muted">Desktop-first work</p>
-              <strong>Bulk editing and dense planning</strong>
+              <p className="muted">Best first step</p>
+              <strong>Add teammates so assignments are meaningful</strong>
             </div>
           </div>
           <p style={{ marginTop: 18 }}>
-            The task center is designed so your team can quickly update status from a phone browser without needing
-            the full desktop management surface.
+            You can now create subtasks while creating a task, and also keep adding more subtasks later as the work evolves.
           </p>
         </article>
       </section>
 
       <section className="page-stack">
+        {!tasks.length && (
+          <article className="empty-state">
+            No tasks yet. Add your team first, then create a task with its subtasks directly here.
+          </article>
+        )}
+
         {tasks.map((task) => (
           <article key={task.id} className="list-card">
             <div className="section-header">
@@ -158,18 +182,50 @@ export default async function TasksPage() {
               ))}
             </div>
 
-            {!!task.subtasks.length && (
-              <div style={{ marginTop: 18 }}>
-                <p className="eyebrow" style={{ marginBottom: 10 }}>
-                  Subtasks
-                </p>
-                <div className="pill-group">
+            <div style={{ marginTop: 18 }}>
+              <p className="eyebrow" style={{ marginBottom: 10 }}>
+                Subtasks
+              </p>
+              {task.subtasks.length ? (
+                <div className="stack-list">
                   {task.subtasks.map((subtask) => (
-                    <StatusBadge key={subtask.id} label={`${subtask.title} • ${subtask.status}`} />
+                    <div key={subtask.id} className="surface">
+                      <div className="section-header" style={{ marginBottom: 0 }}>
+                        <strong>{subtask.title}</strong>
+                        <StatusBadge label={subtask.status} />
+                      </div>
+                      <div className="meta-row" style={{ marginTop: 8 }}>
+                        <span>{users.find((user) => user.id === subtask.assigneeId)?.name ?? "Unassigned"}</span>
+                      </div>
+                    </div>
                   ))}
                 </div>
+              ) : (
+                <div className="empty-state">No subtasks yet.</div>
+              )}
+            </div>
+
+            <form action={createSubtaskAction} className="inline-form" style={{ marginTop: 18 }}>
+              <input type="hidden" name="taskId" value={task.id} />
+              <div className="field">
+                <label htmlFor={`subtask-${task.id}`}>Add subtask</label>
+                <input id={`subtask-${task.id}`} name="title" placeholder="Add the next checklist item" />
               </div>
-            )}
+              <div className="field">
+                <label htmlFor={`subtask-assignee-${task.id}`}>Assign to</label>
+                <select id={`subtask-assignee-${task.id}`} name="assigneeId" defaultValue="">
+                  <option value="">Unassigned</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button className="button-secondary" type="submit">
+                Add subtask
+              </button>
+            </form>
 
             <div style={{ marginTop: 18 }}>
               <p className="eyebrow" style={{ marginBottom: 10 }}>

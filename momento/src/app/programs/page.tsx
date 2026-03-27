@@ -86,6 +86,7 @@ export default async function ProgramsPage() {
       </section>
 
       <section className="card-grid">
+        {!programs.length && <article className="empty-state">No programs yet. Start here, then connect projects, tasks, and subtasks underneath.</article>}
         {programs.map((program) => {
           const taskCount = program.projects.reduce((sum, project) => sum + project.tasks.length, 0);
           const doneCount = program.projects.reduce(

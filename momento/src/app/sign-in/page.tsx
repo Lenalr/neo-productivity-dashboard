@@ -12,8 +12,9 @@ export default function SignInPage() {
           <p className="eyebrow">Access Control</p>
           <h2>Microsoft sign-in for NeoTechie only.</h2>
           <p>
-            Momento is prepared for Microsoft / Entra ID access control. Only verified team members with
-            `@neotechie.in` addresses should be allowed into the production workspace.
+          Momento is prepared for Microsoft / Entra ID access control. Only verified team members with{" "}
+            <code style={{ fontFamily: "monospace", opacity: 0.85 }}>@neotechie.in</code>{" "}
+            addresses should be allowed into the production workspace.
           </p>
         </div>
         <div className="panel">

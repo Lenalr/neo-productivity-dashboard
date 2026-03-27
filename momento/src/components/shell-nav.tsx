@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { href: "/", label: "Dashboard" },
@@ -15,13 +16,16 @@ export function ShellNav() {
     <header className="shell-header">
       <div className="shell-header__inner">
         <BrandMark />
-        <nav className="shell-nav" aria-label="Primary">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="shell-nav__link">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="shell-header__actions">
+          <nav className="shell-nav" aria-label="Primary">
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} className="shell-nav__link">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

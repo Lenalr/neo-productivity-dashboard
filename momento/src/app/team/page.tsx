@@ -1,3 +1,4 @@
+import { createUserAction } from "@/app/actions";
 import { MetricCard } from "@/components/metric-card";
 import { StatusBadge } from "@/components/status-badge";
 import { getMomentoData } from "@/lib/data";
@@ -24,6 +25,38 @@ export default async function TeamPage() {
       </section>
 
       <section className="two-column">
+        <article className="form-card">
+          <div className="section-header">
+            <div className="section-title">
+              <p className="eyebrow">People</p>
+              <h3>Add teammate</h3>
+            </div>
+          </div>
+          <form action={createUserAction}>
+            <div className="form-grid">
+              <div className="field">
+                <label htmlFor="name">Name</label>
+                <input id="name" name="name" placeholder="Ex: Angel" required />
+              </div>
+              <div className="field">
+                <label htmlFor="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="angel@neotechie.in" required />
+              </div>
+              <div className="field">
+                <label htmlFor="role">Role</label>
+                <input id="role" name="role" placeholder="Automation Engineer" required />
+              </div>
+              <div className="field">
+                <label htmlFor="team">Team</label>
+                <input id="team" name="team" placeholder="Automation" required />
+              </div>
+            </div>
+            <button className="button" type="submit">
+              Add teammate
+            </button>
+          </form>
+        </article>
+
         <article className="list-card">
           <div className="section-header">
             <div className="section-title">
@@ -31,6 +64,9 @@ export default async function TeamPage() {
               <h3>Who owns what right now</h3>
             </div>
           </div>
+          {!metrics.teamLoad.length && (
+            <div className="empty-state">No teammates yet. Add your team first so tasks and subtasks can be assigned properly.</div>
+          )}
           {metrics.teamLoad.map((entry) => (
             <div key={entry.user.id} className="team-row">
               <div className="section-header" style={{ marginBottom: 0 }}>
@@ -62,29 +98,6 @@ export default async function TeamPage() {
               </div>
             </div>
           ))}
-        </article>
-
-        <article className="panel panel--dark">
-          <div className="section-header">
-            <div className="section-title">
-              <p className="eyebrow">Interpretation</p>
-              <h3>How to read the productivity score</h3>
-            </div>
-          </div>
-          <div className="stack-list">
-            <div className="surface">
-              <strong>Completion rate</strong>
-              <p className="muted">Higher completion relative to open work raises the score.</p>
-            </div>
-            <div className="surface">
-              <strong>Overdue pressure</strong>
-              <p className="muted">Late tasks reduce the score and signal execution drag.</p>
-            </div>
-            <div className="surface">
-              <strong>Workload balance</strong>
-              <p className="muted">Large ownership imbalances reduce the score to flag bottlenecks.</p>
-            </div>
-          </div>
         </article>
       </section>
     </div>

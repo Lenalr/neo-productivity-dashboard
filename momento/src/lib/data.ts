@@ -1,24 +1,19 @@
-import {
-  getImportJobs,
-  getProductivitySnapshots,
-  getPrograms,
-  getProjects,
-  getSubtasks,
-  getTaskNotes,
-  getTasks,
-  getUsers,
-} from "@/lib/db";
+import { cookies } from "next/headers";
 import { calculateDashboardMetrics, describeProductivity } from "@/lib/dashboard";
+import { deserializeStore, storeCookieName } from "@/lib/db";
 
 export async function getMomentoData() {
-  const users = getUsers();
-  const programsBase = getPrograms();
-  const projectsBase = getProjects();
-  const tasksBase = getTasks();
-  const subtasks = getSubtasks();
-  const notes = getTaskNotes();
-  const importJobs = getImportJobs();
-  const snapshots = getProductivitySnapshots();
+  const cookieStore = await cookies();
+  const base = deserializeStore(cookieStore.get(storeCookieName)?.value);
+
+  const users = base.users;
+  const programsBase = base.programs;
+  const projectsBase = base.projects;
+  const tasksBase = base.tasks;
+  const subtasks = base.subtasks;
+  const notes = base.notes;
+  const importJobs = base.importJobs;
+  const snapshots = base.snapshots;
 
   const userMap = new Map(users.map((user) => [user.id, user]));
   const programMap = new Map(programsBase.map((program) => [program.id, program]));

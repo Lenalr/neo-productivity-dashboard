@@ -127,6 +127,7 @@ export default async function ProjectsPage() {
       </section>
 
       <section className="card-grid">
+        {!projects.length && <article className="empty-state">No projects yet. Create a program first, then create a project inside it.</article>}
         {projects.map((project) => {
           const doneCount = project.tasks.filter((task) => task.status === "Done").length;
           const progress = project.tasks.length ? Math.round((doneCount / project.tasks.length) * 100) : 0;

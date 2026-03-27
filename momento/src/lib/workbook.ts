@@ -16,7 +16,7 @@ export type ParsedWorkbookProject = {
 
 export const workbookSourcePath =
   process.env.MOMENTO_IMPORT_FILE ||
-  String.raw`C:\Users\Lenal\OneDrive - NeoTechie Private Limited\Tasks and management'.xlsx`;
+  String.raw`C:\Users\Lenal\OneDrive - NeoTechie Private Limited\Tasks and management.xlsx`;
 
 export function getWorkbookMeta() {
   const exists = fs.existsSync(workbookSourcePath);

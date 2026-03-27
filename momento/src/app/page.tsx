@@ -18,6 +18,7 @@ function formatDate(date: Date | null) {
 
 export default async function Home() {
   const { metrics, projects, programs, snapshots, productivityNarrative } = await getMomentoData();
+  const hasWorkspace = programs.length > 0 || projects.length > 0 || metrics.totalTasks > 0;
 
   return (
     <div className="page-stack">
@@ -26,8 +27,9 @@ export default async function Home() {
           <p className="eyebrow">Momento Executive Cockpit</p>
           <h2>Know if the team is productive in one glance.</h2>
           <p>
-            Momento gives NeoTechie a company-ready control center for programs, projects, tasks,
-            ownership, and delivery health across NeoTechie.
+            {hasWorkspace
+              ? "Momento gives NeoTechie a company-ready control center for programs, projects, tasks, ownership, and delivery health across NeoTechie."
+              : "Start clean: add your team, create your first program, then build projects, tasks, and subtasks exactly the way your operation works."}
           </p>
           <div className="button-row" style={{ marginTop: 20 }}>
             <Link href="/tasks" className="button">
@@ -93,15 +95,21 @@ export default async function Home() {
               <strong>{metrics.teamLoad.length} team members tracked</strong>
             </div>
           </div>
-          <div className="trend-chart" style={{ marginTop: 24 }}>
-            {snapshots.slice(-6).map((snapshot) => (
-              <div key={snapshot.id} className="trend-chart__column">
-                <div className="trend-chart__bar" style={{ height: `${Math.max(48, snapshot.score * 1.4)}px` }} />
-                <strong>{snapshot.score}</strong>
-                <span className="muted">{formatDate(snapshot.date)}</span>
-              </div>
-            ))}
-          </div>
+          {snapshots.length ? (
+            <div className="trend-chart" style={{ marginTop: 24 }}>
+              {snapshots.slice(-6).map((snapshot) => (
+                <div key={snapshot.id} className="trend-chart__column">
+                  <div className="trend-chart__bar" style={{ height: `${Math.max(48, snapshot.score * 1.4)}px` }} />
+                  <strong>{snapshot.score}</strong>
+                  <span className="muted">{formatDate(snapshot.date)}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" style={{ marginTop: 24 }}>
+              Productivity trends will appear once your team starts using Momento.
+            </div>
+          )}
         </article>
 
         <article className="panel">
@@ -115,6 +123,9 @@ export default async function Home() {
             </Link>
           </div>
           <div className="stack-list">
+            {!metrics.topPriorityTasks.length && (
+              <div className="empty-state">No active tasks yet. Add your first task with subtasks to start tracking execution.</div>
+            )}
             {metrics.topPriorityTasks.map((task) => (
               <div key={task.id} className="stack-item">
                 <div className="section-header" style={{ marginBottom: 0 }}>

@@ -59,7 +59,10 @@ export function calculateDashboardMetrics(payload: DashboardPayload) {
   const workloadBalance = teamLoad.length
     ? Math.max(...teamLoad.map((item) => item.assigned)) - Math.min(...teamLoad.map((item) => item.assigned))
     : 0;
-  const productivityScore = Math.max(0, Math.min(100, completionRate + (100 - overdueRate) - workloadBalance * 3));
+  // When there are no tasks yet, score should be 0 (empty workspace) not 100 (formula gives 100 with all zeros)
+  const productivityScore = totalTasks === 0
+    ? 0
+    : Math.max(0, Math.min(100, completionRate + (100 - overdueRate) - workloadBalance * 3));
 
   let productivityLabel = "Stable";
   if (productivityScore >= 85) {
